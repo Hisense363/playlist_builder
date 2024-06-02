@@ -1,21 +1,18 @@
-require("dotenv").config();
 const express = require("express");
 const axios = require("axios");
+const path = require("path");
 
 const app = express();
-const port = 3000;
-
-const path = require("path");
 
 app.use(express.static(path.join(__dirname, "client/build")));
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "client/", "index.html"));
-});
-
-app.get("/comments", async (req, res) => {
+app.get("/api/comments", async (req, res) => {
   try {
-    const { subreddit, postId } = req.query;
+    const { postUrl } = req.query;
+    // Extract the subreddit and post ID from the post URL
+    const subreddit = "AskReddit"; // Replace with the actual subreddit
+    const postId = "abc123"; // Replace with the actual post ID
+
     const accessToken = process.env.ACCESS_TOKEN;
 
     const response = await axios.get(
@@ -42,6 +39,11 @@ app.get("/comments", async (req, res) => {
   }
 });
 
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client/build", "index.html"));
+});
+
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
