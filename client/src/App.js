@@ -31,7 +31,7 @@ function App() {
   };
 
   const handleSearch = async () => {
-    if (validateInput()) {
+    if (validateInput(inputValue)) {
       const { subreddit, postId } = extractSubredditAndPostId();
       if (subreddit && postId) {
         try {
