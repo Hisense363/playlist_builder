@@ -2,10 +2,16 @@ require("dotenv").config();
 const express = require("express");
 const axios = require("axios");
 const path = require("path");
+const authMiddleware = require("./middleware/authMiddleware");
+const commentsRoutes = require("./routes/commentsRoutes");
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, "client/build")));
+authMiddleware.refreshAccessToken();
+
+app.use("/api/comments", commentsRoutes);
+
+app.use(express.static(path.join(__dirname, "../client/build")));
 
 app.get("/api/comments", async (req, res) => {
   try {
