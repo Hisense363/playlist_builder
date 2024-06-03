@@ -55,6 +55,7 @@ function App() {
   return (
     <div>
       <h1>Reddit Comment Retriever</h1>
+      <h2>Enter a valid link to a reddit post</h2>
       <input
         type="text"
         value={inputValue}
