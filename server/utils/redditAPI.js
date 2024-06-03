@@ -12,15 +12,34 @@ async function getComments(subreddit, postId, accessToken) {
         },
       }
     );
+    function processComments(comments) {
+      const flatComments = [];
 
-    const comments = response.data[1].data.children.map((comment) => ({
-      author: comment.data.author,
-      body: comment.data.body,
-      score: comment.data.score,
-      createdAt: new Date(comment.data.created_utc * 1000).toISOString(),
-    }));
+      function processComment(comment) {
+        flatComments.push({
+          author: comment.data.author,
+          body: comment.data.body,
+          score: comment.data.score,
+          createdAt: new Date(comment.data.created_utc * 1000).toISOString(),
+        });
 
-    return comments;
+        if (comment.data.replies && comment.data.replies.data.children) {
+          comment.data.replies.data.children.forEach((reply) => {
+            if (reply.kind === "t1") {
+              processComment(reply);
+            }
+          });
+        }
+      }
+
+      comments.forEach((comment) => {
+        if (comment.kind === "t1") {
+          processComment(comment);
+        }
+      });
+      return flatComments;
+    }
+    return processComments(response.data[1].data.children);
   } catch (error) {
     console.error("Error retrieving comments:", error);
     throw error;
