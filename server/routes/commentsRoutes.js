@@ -4,8 +4,11 @@ const commentsController = require("../controllers/commentsController");
 const authMiddleware = require("../middleware/authMiddleware");
 
 router.get("/", async (req, res) => {
-  const accessToken = authMiddleware.getAccessToken();
-  const comments = await commentsController.getComments(req.query, accessToken);
+  const redditAccessToken = authMiddleware.getRedditAccessToken();
+  const comments = await commentsController.getComments(
+    req.query,
+    redditAccessToken
+  );
   res.json(comments);
 });
 

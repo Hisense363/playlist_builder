@@ -7,7 +7,8 @@ const commentsRoutes = require("./routes/commentsRoutes");
 
 const app = express();
 
-authMiddleware.refreshAccessToken();
+authMiddleware.refreshRedditAccessToken();
+authMiddleware.refreshSpotifyAccessToken();
 
 app.use("/api/comments", commentsRoutes);
 

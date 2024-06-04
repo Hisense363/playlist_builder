@@ -1,7 +1,7 @@
 const axios = require("axios");
 const config = require("../config/config");
 
-async function obtainAccessToken() {
+async function obtainRedditAccessToken() {
   try {
     const response = await axios.post(
       "https://www.reddit.com/api/v1/access_token",
@@ -10,8 +10,8 @@ async function obtainAccessToken() {
       },
       {
         auth: {
-          username: config.clientId,
-          password: config.clientSecret,
+          username: config.redClientId,
+          password: config.redClientSecret,
         },
         headers: {
           "user-agent": config.userAgent,
@@ -23,35 +23,84 @@ async function obtainAccessToken() {
     const accessToken = response.data.access_token;
     const expiresIn = response.data.expires_in;
 
-    console.log("New access token obtained:", accessToken);
+    console.log("New Reddit access token obtained:", accessToken);
 
     return { accessToken, expiresIn };
   } catch (error) {
-    console.error("Error obtaining access token:", error);
+    console.error("Error obtaining Reddit access token:", error);
     throw error;
   }
 }
 
-let accessToken = null;
+let redditAccessToken = null;
 
-async function refreshAccessToken() {
+async function refreshRedditAccessToken() {
   try {
     const { accessToken: newAccessToken, expiresIn } =
-      await obtainAccessToken();
-    accessToken = newAccessToken;
+      await obtainRedditAccessToken();
+    redditAccessToken = newAccessToken;
 
-    setTimeout(refreshAccessToken, (expiresIn - 60) * 1000); // Refresh 1 minute before expiration
+    setTimeout(refreshRedditAccessToken, (expiresIn - 60) * 1000); // Refresh 1 minute before expiration
   } catch (error) {
     console.error("Error refreshing access token:", error);
-    setTimeout(refreshAccessToken, 60000); // Retry after 1 minute
+    setTimeout(refreshRedditAccessToken, 60000); // Retry after 1 minute
   }
 }
 
-function getAccessToken() {
-  return accessToken;
+function getRedditAccessToken() {
+  return redditAccessToken;
+}
+
+async function obtainSpotifyAccessToken() {
+  try {
+    const response = await axios.post(
+      "https://accounts.spotify.com/api/token",
+      {
+        grant_type: "client_credentials",
+        client_id: config.spotClientId,
+        client_secret: config.spotClientSecret,
+      },
+      {
+        headers: {
+          "content-type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    const accessToken = response.data.access_token;
+    const expiresIn = response.data.expires_in;
+
+    console.log("New Spotify access token obtained:", accessToken);
+
+    return { accessToken, expiresIn };
+  } catch (error) {
+    console.error("Error obtaining Spotify access token:", error);
+    throw error;
+  }
+}
+
+let spotifyAccessToken = null;
+
+async function refreshSpotifyAccessToken() {
+  try {
+    const { accessToken: newAccessToken, expiresIn } =
+      await obtainSpotifyAccessToken();
+    spotifyAccessToken = newAccessToken;
+
+    setTimeout(refreshSpotifyAccessToken, (expiresIn - 60) * 1000); // Refresh 1 minute before expiration
+  } catch (error) {
+    console.error("Error refreshing access token:", error);
+    setTimeout(refreshSpotifyAccessToken, 60000); // Retry after 1 minute
+  }
+}
+
+function getSpotifyAccessToken() {
+  return spotifyAccessToken;
 }
 
 module.exports = {
-  refreshAccessToken,
-  getAccessToken,
+  refreshRedditAccessToken,
+  getRedditAccessToken,
+  refreshSpotifyAccessToken,
+  getSpotifyAccessToken,
 };
