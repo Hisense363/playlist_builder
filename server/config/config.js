@@ -5,6 +5,7 @@ module.exports = {
   redditApiBaseUrl: "https://oauth.reddit.com",
   redClientId: process.env.REDDIT_CLIENT_ID,
   redClientSecret: process.env.REDDIT_CLIENT_SECRET,
+  spotApiBaseUrl: "https://api.spotify.com/v1",
   spotClientId: process.env.SPOTIFY_CLIENT_ID,
   spotClientSecret: process.env.SPOTIFY_CLIENT_SECRET,
   userAgent: process.env.USER_AGENT,

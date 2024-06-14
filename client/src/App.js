@@ -2,15 +2,30 @@ import React, { useState } from "react";
 import axios from "axios";
 
 function App() {
-  const [inputValue, setInputValue] = useState("");
+  const [commentValue, setCommentValue] = useState("");
+  const [songValue, setSongValue] = useState("");
+  const [artistValue, setArtistValue] = useState("");
   const [comments, setComments] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [isCommentButtonDisabled, setIsCommentButtonDisabled] = useState(true);
+  const [isSongButtonDisabled, setIsSongButtonDisabled] = useState(true);
 
-  const handleInputChange = (event) => {
+  const handleCommentChange = (event) => {
     const value = event.target.value;
-    setInputValue(value);
-    setIsButtonDisabled(!validateInput(value));
+    setCommentValue(value);
+    setIsCommentButtonDisabled(!validateInput(value));
+  };
+
+  const handleSongChange = (event) => {
+    const value = event.target.value;
+    setSongValue(value);
+    setIsSongButtonDisabled(!validateInput(value));
+  };
+
+  const handleArtistChange = (event) => {
+    const value = event.target.value;
+    setArtistValue(value);
+    setIsSongButtonDisabled(!validateInput(value));
   };
 
   const validateInput = (value) => {
@@ -30,7 +45,7 @@ function App() {
     return null;
   };
 
-  const handleSearch = async () => {
+  const handleCommentSearch = async () => {
     if (validateInput(inputValue)) {
       const { subreddit, postId } = extractSubredditAndPostId();
       if (subreddit && postId) {
@@ -52,17 +67,28 @@ function App() {
     }
   };
 
+  const handleSongSearch = async () => {
+        const song =
+          songValue.length > 0 ? songValue.split(" ").join("+") : null;
+        const artist =
+          artistValue.length > 0 ? artistValue.split(" ").join("+") : null;
+        try {
+          const response = await axios.get("/api/songs", {
+            params: { song, artist },
+          });
+  };
+
   return (
     <div>
       <h1>Reddit Comment Retriever</h1>
       <h2>Enter a valid link to a reddit post</h2>
       <input
         type="text"
-        value={inputValue}
-        onChange={handleInputChange}
+        value={commentValue}
+        onChange={handleCommentChange}
         placeholder="Enter post URL"
       />
-      <button onClick={handleSearch} disabled={isButtonDisabled}>
+      <button onClick={handleCommentSearch} disabled={isCommentButtonDisabled}>
         Search
       </button>
       {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
@@ -71,6 +97,23 @@ function App() {
           <li key={index}>{comment.body}</li>
         ))}
       </ul>
+      <h2>Enter a song name</h2>
+      <input
+        type="text"
+        value={songValue}
+        onChange={handleSongChange}
+        placeholder="Enter Song name"
+      />
+      <h2>Enter an artist name</h2>
+      <input
+        type="text"
+        value={artistValue}
+        onChange={handleArtistChange}
+        placeholder="Enter Artist name"
+      />
+      <button onClick={handleSongSearch} disabled={isSongButtonDisabled}>
+        Search for Song
+      </button>
     </div>
   );
 }
